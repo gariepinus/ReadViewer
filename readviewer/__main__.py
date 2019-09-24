@@ -1,6 +1,9 @@
 import sys
 import json
+from functools import reduce
+import readviewer.data as data
 from readviewer.models import Book
+from readviewer.functions import calculate_scores
 
 if __name__ == "__main__":
 
@@ -21,7 +24,12 @@ if __name__ == "__main__":
     with open(file_path, "r") as data_file:
         export_data = json.load(data_file)
 
-    books = []
     for book in export_data['books']:
-        books.append(Book(book))
+        data.books.append(Book(book))
     
+    # Collect the sessions from all books in a list and calculate their scores
+    data.sessions = reduce(lambda a,b: a + b.sessions, data.books, [])
+    calculate_scores()
+
+    data.books.sort(key = lambda book: book.current_position_timestamp, reverse=True)
+    data.sessions.sort(key = lambda session: session.timestamp, reverse=True)
