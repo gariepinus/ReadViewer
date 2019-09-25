@@ -1,6 +1,7 @@
 import json
 from functools import reduce
 from statistics import mean
+from datetime import timedelta
 from readviewer.models import Session, Book
 
 
@@ -47,7 +48,7 @@ def calculate_scores():
 
 
 def sessions_in_period(start_date=None, end_date=None):
-    """Returns a list of the sessions between start and end date."""
+    """Returns a list of the sessions from start and end date."""
 
     global sessions
 
@@ -59,3 +60,12 @@ def sessions_in_period(start_date=None, end_date=None):
         return list(filter(lambda session: (session.timestamp.date() >= start_date.date()), sessions))
     else:
         return list(filter(lambda session: (session.timestamp.date() >= start_date.date() and session.timestamp.date() <= end_date.date()), sessions))
+
+
+def cumulate(attribute, start_date=None, end_date=None):
+    """Returns the sum of the given attribute for all sessions from start to end date."""
+
+    if attribute == "duration":
+        return reduce(lambda a,b: a + b.duration, sessions_in_period(start_date=start_date, end_date=end_date), timedelta())
+    else:
+        return sum([getattr(session, attribute) for session in sessions_in_period(start_date=start_date, end_date=end_date)])
