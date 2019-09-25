@@ -31,7 +31,7 @@ def load(file):
 def calculate_scores():
     """Calculate session scores and save add them to the instances."""
 
-    global books, sessions
+    global sessions
 
     max_duration = max([session.duration for session in sessions])
     max_pages = max([session.pages for session in sessions])
@@ -44,3 +44,18 @@ def calculate_scores():
         pages_score = session.pages / one_percent_pages
 
         session.set_score(int(mean([duration_score, pages_score])))
+
+
+def sessions_in_period(start_date=None, end_date=None):
+    """Returns a list of the sessions between start and end date."""
+
+    global sessions
+
+    if start_date is None and end_date is None:
+        return sessions
+    elif start_date is None:
+        return list(filter(lambda session: (session.timestamp.date() <= end_date.date()), sessions))
+    elif end_date is None:
+        return list(filter(lambda session: (session.timestamp.date() >= start_date.date()), sessions))
+    else:
+        return list(filter(lambda session: (session.timestamp.date() >= start_date.date() and session.timestamp.date() <= end_date.date()), sessions))
