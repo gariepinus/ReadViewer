@@ -2,6 +2,7 @@ from datetime import timedelta, datetime
 from functools import reduce
 from statistics import mean
 
+
 class Session:
 
     def __init__(self, json_data, page_count):
@@ -10,7 +11,8 @@ class Session:
         self.start_page = int(json_data['start_position'] * page_count)
         self.end_position = json_data['end_position']
         self.end_page = int(json_data['end_position'] * page_count)
-        self.timestamp = datetime.fromtimestamp(int(str(json_data['timestamp'])[:-3]))
+        self.timestamp = datetime.fromtimestamp(
+            int(str(json_data['timestamp'])[:-3]))
 
     @property
     def pages(self):
@@ -37,7 +39,8 @@ class Book:
     def __init__(self, json_data):
         self.title = json_data['title']
         self.state = json_data['state']
-        self.current_position_timestamp = datetime.fromtimestamp(int(str(json_data['current_position_timestamp'])[:-3]))
+        self.current_position_timestamp = datetime.fromtimestamp(
+            int(str(json_data['current_position_timestamp'])[:-3]))
         self.quotes = json_data['quotes']
         self.page_count = json_data['page_count']
         self.author = json_data['author']
@@ -55,7 +58,7 @@ class Book:
     @property
     def duration(self):
         """Summarized duration of all sessions."""
-        return reduce(lambda a,b: a + b.duration, self.sessions, timedelta())
+        return reduce(lambda a, b: a + b.duration, self.sessions, timedelta())
 
     @property
     def speed(self):
