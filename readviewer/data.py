@@ -8,6 +8,15 @@ from readviewer.models import Session, Book
 books = []
 sessions = []
 
+def finished_books():
+    """Return a list of already finished books."""
+    global books
+    return filter(lambda book: book.state == "Finished", books)
+
+def unfinished_books():
+    """Return a list of unfinished books."""
+    global books
+    return filter(lambda book: book.state != "Finished", books)
 
 def load(file):
     """Load ReadTracker export data."""
