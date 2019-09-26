@@ -73,6 +73,11 @@ class Book:
         return int(self.current_position * 100)
 
     @property
+    def start_timestamp(self):
+        """Timestamp of first reading session."""
+        return self.sessions[0].timestamp
+
+    @property
     def stats(self):
         """String containing this books stats."""
         return "{page_count} Pages. Progress: {progress}%. Score: {score}.\nRead {duration} in {sessions} Sessions. Average speed: {speed} pages/hour.".format(page_count=self.page_count, progress=self.progress, score=self.score, duration=self.duration, sessions=len(self.sessions), speed=self.speed)
