@@ -25,8 +25,8 @@ def load(file):
     calculate_scores()
 
     # Sort the lists
-    books.sort(key = lambda book: book.current_position_timestamp, reverse=True)
-    sessions.sort(key = lambda session: session.timestamp, reverse=True)
+    sort_books("current_position_timestamp", reverse=True)
+    sort_sessions("timestamp", reverse=True)
 
 
 def calculate_scores():
@@ -78,3 +78,17 @@ def average(attribute, start_date=None, end_date=None):
         return timedelta(seconds=mean([session.duration.seconds for session in sessions_in_period(start_date=start_date, end_date=end_date)]))
     else:
         return mean([getattr(session, attribute) for session in sessions_in_period(start_date=start_date, end_date=end_date)])
+
+def sort_books(attribute, reverse=False):
+    """Sort books list by the given attribute."""
+
+    global books
+
+    books.sort(key = lambda book: getattr(book, attribute), reverse=reverse)
+
+def sort_sessions(attribute, reverse=False):
+    """Sort sessions list by the given attribute."""
+
+    global sessions
+
+    sessions.sort(key = lambda session: getattr(session, attribute), reverse=reverse)
