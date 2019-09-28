@@ -85,7 +85,7 @@ def average(attribute, start_date=None, end_date=None):
     if attribute == "duration":
         return timedelta(seconds=mean([session.duration.seconds for session in sessions_in_period(start_date=start_date, end_date=end_date)]))
     else:
-        return mean([getattr(session, attribute) for session in sessions_in_period(start_date=start_date, end_date=end_date)])
+        return int(mean([getattr(session, attribute) for session in sessions_in_period(start_date=start_date, end_date=end_date)]))
 
 
 def sort_books(attribute, reverse=False):
