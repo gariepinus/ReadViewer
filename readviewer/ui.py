@@ -1,4 +1,5 @@
 import urwid
+from readviewer import version
 
 
 loop = None
@@ -22,14 +23,20 @@ def run():
 
 class Screen(urwid.Frame):
 
-    def __init__(self, body, header, footer):
+    def __init__(self, body, keymap, book=None):
         global loop
+        self.book = book
 
         body = urwid.Filler(body, valign="top")
 
-        header = urwid.AttrMap(urwid.Text(header, align="right"), "reversed")
+        if book:
+            header_text = "{} // ReadViewer v{}".format(book.title, version)
+        else:
+            header_text = "ReadViewer v{}".format(version)
 
-        footer = urwid.Text(footer)
+        header = urwid.AttrMap(urwid.Text(header_text, align="right"), "reversed")
+        footer = urwid.AttrMap(urwid.Text(str(Keymap(["Q::Quit", "q::Back/Quit"] + keymap))), "dim")
+
         super().__init__(body, header=header, footer=footer)
         loop.widget = self
 
@@ -42,15 +49,18 @@ class Screen(urwid.Frame):
 
 class Main_Screen(Screen):
 
-    def __init__(self):
+    def __init__(self, book=None):
         body = urwid.Pile([urwid.Text("Foo"), urwid.Text("Bar")])
-        header = "Main_Header"
-        footer = "Main_Footer"
-        super().__init__(body, header, footer)
+
+        keymap = ["s::Sessions"]
+        
+        super().__init__(body, keymap, book)
 
     def keypress(self, size, key):
-        if key == "q":
+        if key == "q" and self.book is None:
             raise urwid.ExitMainLoop()
+        elif key == "q":
+            Main_Screen
         if key in ["s", "S"]:
             Sessions_Screen()
         else:
@@ -59,14 +69,25 @@ class Main_Screen(Screen):
 
 class Sessions_Screen(Screen):
 
-    def __init__(self):
+    def __init__(self, book=None):
         body = urwid.Text("Foobar")
-        header = "Session_Header"
         footer = "Session_Footer"
-        super().__init__(body, header, footer)
+        super().__init__(body, footer, book)
 
     def keypress(self, size, key):
         if key == "q":
-            Main_Screen()
+            Main_Screen(self.book)
         else:
             return super().keypress(size, key)
+
+
+class Keymap():
+
+    def __init__(self, lst):
+        self.lst = lst
+
+    def __str__(self):
+        r = ""
+        for key in self.lst:
+            r += "{}  ".format(key)
+        return r
