@@ -23,6 +23,10 @@ def run():
     loop.run()
 
 
+def book_chosen(button, choice):
+    Main_Screen(choice)
+
+
 class Screen(urwid.Frame):
 
     def __init__(self, body, keymap=[], book=None):
@@ -51,9 +55,9 @@ class Screen(urwid.Frame):
 
 class Main_Screen(Screen):
 
-    def __init__(self, book=None):
+    def __init__(self, book=None, focus=None):
         self.book = book
-        body = urwid.Pile([self.stat_box, self.graph, urwid.Text("Foo"), urwid.Text("Bar")])
+        body = urwid.Pile([("pack", self.stat_box), self.graph, urwid.BoxAdapter(self.scroll_list, 20)])
 
         keymap = ["s::Sessions"]
 
@@ -64,7 +68,7 @@ class Main_Screen(Screen):
         if key == "q" and self.book is None:
             raise urwid.ExitMainLoop()
         elif key == "q":
-            Main_Screen
+            Main_Screen()
         if key == "s":
             Sessions_Screen(self.book)
         else:
@@ -94,7 +98,41 @@ class Main_Screen(Screen):
 
     @property
     def graph(self):
-        return (20, Bar_graph([session.score for session in data.sessions], "Score", "Sessions", "Score"))
+        if self.book:
+            sessions = self.book.sessions[-100:]
+        else:
+            sessions = data.sessions[-100:]
+        return (20, Bar_graph([session.score for session in sessions], x="Sessions [most recent {}]".format(len(sessions)), y="Score"))
+
+    @property
+    def scroll_list(self):
+        if self.book:
+            body = [urwid.Divider()]
+
+            for session in self.book.sessions:
+                button = urwid.Text("{}".format(session))
+                body.append(urwid.AttrMap(button, None))
+
+            lst = urwid.ListBox(urwid.SimpleFocusListWalker(body))
+
+        else:
+            body = [urwid.Divider(), urwid.AttrMap(urwid.Text("Currently reading"), "dim"), urwid.Divider()]
+
+            for book in data.unfinished_books():
+                button = urwid.Button("{}\n{}".format(book, book.stats), on_press=book_chosen, user_data=book)
+                body.append(urwid.AttrMap(button, None, focus_map='green'))
+
+            body.append(urwid.Divider())
+            body.append(urwid.AttrMap(urwid.Text("Finished"), "dim"))
+            body.append(urwid.Divider())
+
+            for book in data.finished_books():
+                button = urwid.Button("{}\n{}".format(book, book.stats), on_press=book_chosen, user_data=book)
+                body.append(urwid.AttrMap(button, None, focus_map='green'))
+
+            lst = urwid.ListBox(urwid.SimpleFocusListWalker(body))
+
+        return urwid.Padding(lst, left=1, right=1)
 
 class Sessions_Screen(Screen):
 
@@ -128,10 +166,10 @@ class Bar_graph(urwid.Overlay):
 
         widgets = []
         if heading:
-            widgets.append(("pack", urwid.AttrMap(urwid.Text("  == {} ==".format(heading)), "heading")))
+            widgets.append(("pack", urwid.AttrMap(urwid.Text(" == {} ==".format(heading)), "heading")))
         
         if x and y:
-            legend = "  x ↦ {}  /  y ↥ {} [0-{}]".format(x,y,max(self.values))
+            legend = " x ↦ {}  /  y ↥ {} [0-{}]".format(x,y,max(self.values))
             widgets.append(("pack", urwid.AttrMap(urwid.Text(legend), "dim")))
 
         widgets.append(("pack", urwid.Divider()))
