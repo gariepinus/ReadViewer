@@ -19,31 +19,24 @@ def run():
                ("bar2", "", "light cyan")]
 
     loop = urwid.MainLoop(None, palette=palette)
-    Main_Screen()
+    Main_Screen().draw()
     loop.run()
 
 
 def book_chosen(button, choice):
-    Main_Screen(choice)
+    Main_Screen(choice).draw()
 
 
 class Screen(urwid.Frame):
 
-    def __init__(self, body, keymap=[], book=None):
+    def __init__(self, content, path=[], keymap=[]):
+        self.content = content
+        self.path = path
+        self.keymap = keymap
+
+    def draw(self):
+        super().__init__(self.content, header=self.header, footer=self.footer)
         global loop
-        self.book = book
-
-        body = urwid.Filler(body, valign="top")
-
-        if book:
-            header_text = "{} // ReadViewer v{}".format(book.title, version)
-        else:
-            header_text = "ReadViewer v{}".format(version)
-
-        header = urwid.AttrMap(urwid.Text(header_text, align="right"), "reversed")
-        footer = urwid.AttrMap(urwid.Text(str(Keymap(["Q::Quit", "q::Back/Quit"] + keymap))), "dim")
-
-        super().__init__(body, header=header, footer=footer)
         loop.widget = self
 
     def keypress(self, size, key):
@@ -52,25 +45,44 @@ class Screen(urwid.Frame):
         else:
             return super().keypress(size, key)
 
+    @property
+    def body(self):
+        return urwid.Filler(self.content, valign="top")
+
+    @property
+    def header(self):
+        header_text = "/ReadViewer v{}".format(version)
+        for level in self.path:
+            header_text = "{}/{}".format(level, header_text)
+        return urwid.AttrMap(urwid.Text(header_text, align="right"), "reversed")
+
+    @property
+    def footer(self):
+        keylist = "Q::Quit  q::Back/Quit"
+        for key in self.keymap:
+            keylist += "  {}".format(key)
+        return urwid.AttrMap(urwid.Text(keylist), "dim")
+
 
 class Main_Screen(Screen):
 
     def __init__(self, book=None, focus=None):
         self.book = book
-        body = urwid.Pile([("pack", self.stat_box), self.graph, urwid.BoxAdapter(self.scroll_list, 20)])
-
+        body = urwid.Pile([("pack", self.stat_box), self.graph, self.scroll_list])
         keymap = ["s::Sessions"]
-
-        super().__init__(body, keymap, book)
-
+        if book:
+            path = [book.title[:40]]
+        else:
+            path = []
+        super().__init__(body, path, keymap)
 
     def keypress(self, size, key):
         if key == "q" and self.book is None:
             raise urwid.ExitMainLoop()
         elif key == "q":
-            Main_Screen()
+            Main_Screen().draw()
         if key == "s":
-            Sessions_Screen(self.book)
+            Sessions_Screen(self.book).draw()
         else:
             return super().keypress(size, key)
 
@@ -131,32 +143,28 @@ class Main_Screen(Screen):
                 body.append(urwid.AttrMap(button, None, focus_map='green'))
 
             lst = urwid.ListBox(urwid.SimpleFocusListWalker(body))
+        
+        padding = urwid.Padding(lst, left=1, right=1)
+        return urwid.BoxAdapter(padding, 20)
 
-        return urwid.Padding(lst, left=1, right=1)
 
 class Sessions_Screen(Screen):
 
     def __init__(self, book=None):
+        self.book = book
         body = urwid.Text("Foobar")
-        super().__init__(body, [], book)
+        keymap = []
+        path = []
+        if book:
+            path.append(book.title[:40])
+        path.append("sessions")
+        super().__init__(body, path, keymap)
 
     def keypress(self, size, key):
         if key == "q":
-            Main_Screen(self.book)
+            Main_Screen(self.book).draw()
         else:
             return super().keypress(size, key)
-
-
-class Keymap():
-
-    def __init__(self, lst):
-        self.lst = lst
-
-    def __str__(self):
-        r = ""
-        for key in self.lst:
-            r += "{}  ".format(key)
-        return r
 
 
 class Bar_graph(urwid.Overlay):
