@@ -58,7 +58,7 @@ class Screen(urwid.Frame):
 
     @property
     def footer(self):
-        keylist = "Q::Quit  q::Back/Quit"
+        keylist = "\nQ::Quit  q::Back/Quit"
         for key in self.keymap:
             keylist += "  {}".format(key)
         return urwid.AttrMap(urwid.Text(keylist), "dim")
@@ -152,19 +152,34 @@ class Sessions_Screen(Screen):
 
     def __init__(self, book=None):
         self.book = book
-        body = urwid.Text("Foobar")
-        keymap = []
+        keymap = ["S::Sort"]
         path = []
         if book:
             path.append(book.title[:40])
-        path.append("sessions")
-        super().__init__(body, path, keymap)
+        path.append("Sessions")
+        super().__init__(self.body, path, keymap)
 
     def keypress(self, size, key):
         if key == "q":
             Main_Screen(self.book).draw()
         else:
             return super().keypress(size, key)
+    
+    @property
+    def body(self):
+        body = [urwid.Divider()]
+        if self.book:
+            lst = self.book.sessions
+        else:
+            lst = data.sessions
+
+        for session in lst:
+            button = urwid.Text("{}".format(session))
+            body.append(urwid.AttrMap(button, None))
+            
+        walker = urwid.ListBox(urwid.SimpleFocusListWalker(body))
+        padding = urwid.Padding(walker, left=1, right=1)
+        return padding
 
 
 class Bar_graph(urwid.Overlay):
