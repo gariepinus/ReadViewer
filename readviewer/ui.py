@@ -95,8 +95,8 @@ class Main_Screen(Screen):
                 time=self.book.duration, 
                 sessions=len(self.book.sessions), 
                 timestamp=self.book.sessions[0].timestamp.date(), 
-                speed=data.average("speed"), 
-                score=data.average("score"))
+                speed=self.book.speed, 
+                score=self.book.average_score)
         else:
             stats = "{pages} pages in {time} over {sessions} sessions since {timestamp}.\n[Average speed: {speed} pages/hour; Average score: {score}]".format(
                 pages=data.cumulate("pages"), 
@@ -176,7 +176,7 @@ class Sessions_Screen(Screen):
         for session in lst:
             button = urwid.Text("{}".format(session))
             body.append(urwid.AttrMap(button, None))
-            
+
         walker = urwid.ListBox(urwid.SimpleFocusListWalker(body))
         padding = urwid.Padding(walker, left=1, right=1)
         return padding

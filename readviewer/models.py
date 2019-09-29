@@ -67,6 +67,11 @@ class Book:
 
     @property
     def score(self):
+        """Summarized score over all sessions."""
+        return sum([session.score for session in self.sessions])
+
+    @property
+    def average_score(self):
         """Average score over all sessions."""
         return int(mean([session.score for session in self.sessions]))
 
