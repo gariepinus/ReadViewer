@@ -68,7 +68,7 @@ class Main_Screen(Screen):
 
     def __init__(self, book=None, focus=None):
         self.book = book
-        body = urwid.Pile([("pack", self.stat_box), self.graph, self.scroll_list])
+        body = urwid.Pile([self.stat_box, self.graph, self.scroll_list])
         keymap = ["s::Sessions"]
         if book:
             path = [book.title[:40]]
@@ -106,7 +106,8 @@ class Main_Screen(Screen):
                 speed=data.average("speed"), 
                 score=data.average("score"))
 
-        return urwid.LineBox(urwid.Text(stats))
+        box = urwid.LineBox(urwid.Text(stats))
+        return ("pack", box)
 
     @property
     def graph(self):
@@ -114,7 +115,8 @@ class Main_Screen(Screen):
             sessions = self.book.sessions[-100:]
         else:
             sessions = data.sessions[-100:]
-        return (20, Bar_graph([session.score for session in sessions], x="Sessions [most recent {}]".format(len(sessions)), y="Score"))
+        graph = Bar_graph([session.score for session in sessions], x="Sessions [most recent {}]".format(len(sessions)), y="Score")
+        return (20, graph)
 
     @property
     def scroll_list(self):
@@ -145,7 +147,7 @@ class Main_Screen(Screen):
             lst = urwid.ListBox(urwid.SimpleFocusListWalker(body))
         
         padding = urwid.Padding(lst, left=1, right=1)
-        return urwid.BoxAdapter(padding, 20)
+        return (20, padding)
 
 
 class Sessions_Screen(Screen):
