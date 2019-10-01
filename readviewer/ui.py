@@ -121,15 +121,11 @@ class Main_Screen(Screen):
 
     @property
     def scroll_list(self):
+        rows, columns = os.popen('stty size', 'r').read().split()
+        height = int(int(rows) - 30)
+
         if self.book:
-            body = [urwid.Divider()]
-
-            for session in self.book.sessions:
-                button = urwid.Text("{}".format(session))
-                body.append(urwid.AttrMap(button, None))
-
-            lst = urwid.ListBox(urwid.SimpleFocusListWalker(body))
-
+            return (height, Session_List(self.book.sessions))
         else:
             body = [urwid.Divider(), urwid.AttrMap(urwid.Text("Currently reading"), "dim"), urwid.Divider()]
 
@@ -146,11 +142,8 @@ class Main_Screen(Screen):
                 body.append(urwid.AttrMap(button, None, focus_map='green'))
 
             lst = urwid.ListBox(urwid.SimpleFocusListWalker(body))
-        
-        padding = urwid.Padding(lst, left=1, right=1)
-
-        rows, columns = os.popen('stty size', 'r').read().split()
-        return (int(int(rows) - 30), padding)
+            padding = urwid.Padding(lst, left=1, right=1)
+            return (height, padding)
 
 
 class Sessions_Screen(Screen):
@@ -161,30 +154,20 @@ class Sessions_Screen(Screen):
         path = []
         if book:
             path.append(book.title[:40])
+            sessions = book.sessions
+        else:
+            sessions = data.sessions
         path.append("Sessions")
-        super().__init__(self.body, path, keymap)
+
+        rows, columns = os.popen('stty size', 'r').read().split()
+        height = int(int(rows) - 8)
+        super().__init__(urwid.Pile([urwid.Divider() ,(height, Session_List(sessions))]), path, keymap)
 
     def keypress(self, size, key):
         if key == "q":
             Main_Screen(self.book).draw()
         else:
             return super().keypress(size, key)
-    
-    @property
-    def body(self):
-        body = [urwid.Divider()]
-        if self.book:
-            lst = self.book.sessions
-        else:
-            lst = data.sessions
-
-        for session in lst:
-            button = urwid.Text("{}".format(session))
-            body.append(urwid.AttrMap(button, None))
-
-        walker = urwid.ListBox(urwid.SimpleFocusListWalker(body))
-        padding = urwid.Padding(walker, left=1, right=1)
-        return padding
 
 
 class Bar_graph(urwid.Overlay):
@@ -223,3 +206,18 @@ class Bar_graph(urwid.Overlay):
 
         graph.set_data(lst, max(self.values))
         return graph
+
+class Session_List(urwid.Padding):
+
+    def __init__(self, sessions):
+    
+        body = [urwid.Divider()]
+
+        for session in sessions:
+            button = urwid.Text("{}".format(session))
+            body.append(urwid.AttrMap(button, None))
+
+        lst = urwid.ListBox(urwid.SimpleFocusListWalker(body))
+        walker = urwid.ListBox(urwid.SimpleFocusListWalker(body))
+        padding = urwid.Padding(walker, left=1, right=1)
+        super().__init__(walker, left=1, right=1)
