@@ -1,6 +1,7 @@
 import urwid
 from readviewer import version
 import readviewer.data as data
+import os
 
 
 loop = None
@@ -147,7 +148,9 @@ class Main_Screen(Screen):
             lst = urwid.ListBox(urwid.SimpleFocusListWalker(body))
         
         padding = urwid.Padding(lst, left=1, right=1)
-        return (20, padding)
+
+        rows, columns = os.popen('stty size', 'r').read().split()
+        return (int(int(rows) - 30), padding)
 
 
 class Sessions_Screen(Screen):
