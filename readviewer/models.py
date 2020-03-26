@@ -31,7 +31,10 @@ class Session:
         self.score = score
 
     def __str__(self):
-        return "{}: {:>4}  - {:>4} ({:>3} pages, {:>3}%), {:>2} pages/hour, {} [{:>2}]".format(self.timestamp, self.start_page, self.end_page, self.pages, self.progress, self.speed, self.duration, self.score)
+        return ("{}: {:>4}  - {:>4} ({:>3} pages, "
+                "{:>3}%), {:>2} pages/hour, {} [{:>2}]").format(
+                    self.timestamp, self.start_page, self.end_page, self.pages,
+                    self.progress, self.speed, self.duration, self.score)
 
 
 class Book:
@@ -93,7 +96,12 @@ class Book:
     @property
     def stats(self):
         """String containing this books stats."""
-        return "{page_count} Pages. Progress: {progress}%. Score: {score}.\nRead {duration} in {sessions} Sessions. Average speed: {speed} pages/hour.".format(page_count=self.page_count, progress=self.progress, score=self.score, duration=self.duration, sessions=len(self.sessions), speed=self.speed)
+        return ("{page_count} Pages. Progress: {progress}%. Score: {score}.\n"
+                "Read {duration} in {sessions} Sessions. "
+                "Average speed: {speed} pages/hour.").format(
+                    page_count=self.page_count, progress=self.progress,
+                    score=self.score, duration=self.duration,
+                    sessions=len(self.sessions), speed=self.speed)
 
     def __str__(self):
         return "{}. {}.".format(self.title, self.author)
