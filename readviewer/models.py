@@ -16,10 +16,12 @@ class Session:
 
     @property
     def pages(self):
+        """Number of pages read"""
         return self.end_page - self.start_page
 
     @property
     def progress(self):
+        """Percantage of pages of book read"""
         return int((self.end_position - self.start_position) * 100)
 
     @property
