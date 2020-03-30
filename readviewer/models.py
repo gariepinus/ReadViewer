@@ -63,6 +63,13 @@ class Book:
         return reduce(lambda a, b: a + b.duration, self.sessions, timedelta())
 
     @property
+    def average_duration(self):
+        """Average duration per session (hours/session)."""
+        delta = timedelta(seconds=mean(
+            [session.duration.seconds for session in self.sessions]))
+        return delta.total_seconds() / 3600
+
+    @property
     def speed(self):
         """Average speed over all sessions."""
         return int(mean([session.speed for session in self.sessions]))
@@ -78,6 +85,12 @@ class Book:
         return self.sessions[0].timestamp
 
     @property
+    def days(self):
+        """Number of days between start end current timestamp."""
+        return (self.current_position_timestamp.date()
+                - self.start_timestamp.date()).days
+
+    @property
     def current_page(self):
         """end_page of last session."""
         return self.sessions[-1].end_page
@@ -85,12 +98,25 @@ class Book:
     @property
     def stats(self):
         """String containing this books stats."""
-        return ("{page_count} Pages. Progress: {progress}%.\n"
-                "Read {duration} in {sessions} Sessions. "
-                "Average speed: {speed} pages/hour.").format(
-                    page_count=self.page_count, progress=self.progress,
-                    duration=self.duration, sessions=len(self.sessions),
-                    speed=self.speed)
+        return ("{current_page} of {page_count} pages "
+                "({progress}%).\n"
+                "Read {duration:.1f} hours in {sessions} sessions "
+                "over {days} days between {start_timestamp} and "
+                "{current_position_timestamp}.\n"
+                "[Averages: {speed} pages/hour; "
+                "{avg_duration:.1f} hours/session; "
+                "{avg_sessions:.1f} sessions/day]").format(
+                    current_page=self.current_page,
+                    page_count=self.page_count,
+                    progress=self.progress,
+                    duration=self.duration.total_seconds() / 3600,
+                    sessions=len(self.sessions),
+                    days=self.days,
+                    start_timestamp=self.start_timestamp.date(),
+                    current_position_timestamp=self.current_position_timestamp.date(),
+                    speed=self.speed,
+                    avg_duration=self.average_duration,
+                    avg_sessions=len(self.sessions) / self.days)
 
     def __str__(self):
         return "{}. {}.".format(self.title, self.author)
