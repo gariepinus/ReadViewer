@@ -1,5 +1,6 @@
 import urwid
 from readviewer import version
+from datetime import datetime
 import readviewer.data as data
 import os
 
@@ -92,12 +93,24 @@ class Main_Screen(Screen):
         if self.book:
             stats = self.book.stats
         else:
-            stats = "{pages} pages in {time} over {sessions} sessions since {timestamp}.\n[Average speed: {speed} pages/hour;]".format(
-                pages=data.cumulate("pages"), 
-                time=data.cumulate("duration"), 
-                sessions=len(data.sessions), 
-                timestamp=data.sessions[0].timestamp.date(), 
-                speed=data.average("speed"))
+            days = (datetime.now().date() -
+                    data.first_session.timestamp.date()).days
+            stats = ("Read {page_count} pages in "
+                     "{duration:.1f} hours and {sessions} sessions "
+                     "over {days} days between {start_timestamp} and "
+                     "{current_position_timestamp}.\n"
+                     "[Averages: {speed} pages/hour; "
+                     "{avg_duration:.1f} hours/session; "
+                     "{avg_sessions:.1f} sessions/day]").format(
+                    page_count=data.cumulate("pages"),
+                    duration=data.cumulate("duration").total_seconds() / 3600,
+                    sessions=len(data.sessions),
+                    days=days,
+                    start_timestamp=data.first_session.timestamp.date(),
+                    current_position_timestamp=datetime.now().date(),
+                    speed=data.average("speed"),
+                    avg_duration=data.average("duration").total_seconds() / 3600,
+                    avg_sessions=len(data.sessions) / days)
 
         box = urwid.LineBox(urwid.Text(stats))
         return ("pack", box)

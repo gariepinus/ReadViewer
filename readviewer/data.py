@@ -11,7 +11,7 @@ sessions = []
 
 def load(file):
     """Load ReadTracker export data."""
-    global books, sessions
+    global books, sessions, first_session
 
     with open(file, "r") as data_file:
         export_data = json.load(data_file)
@@ -21,6 +21,9 @@ def load(file):
 
     # Collect the sessions from all books in seperate list
     sessions = reduce(lambda a, b: a + b.sessions, books, [])
+
+    # Save first session (we need the timestamp)
+    first_session = sessions[0]
 
     # Sort the lists
     sort_books("current_position_timestamp", reverse=True)
