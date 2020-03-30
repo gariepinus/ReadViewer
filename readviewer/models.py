@@ -27,14 +27,11 @@ class Session:
         """Pages per hour (integer)"""
         return int(self.pages / (self.duration.seconds / 60 / 60))
 
-    def set_score(self, score):
-        self.score = score
-
     def __str__(self):
         return ("{}: {:>4}  - {:>4} ({:>3} pages, "
-                "{:>3}%), {:>2} pages/hour, {} [{:>2}]").format(
+                "{:>3}%), {:>2} pages/hour, {}").format(
                     self.timestamp, self.start_page, self.end_page, self.pages,
-                    self.progress, self.speed, self.duration, self.score)
+                    self.progress, self.speed, self.duration)
 
 
 class Book:
@@ -69,16 +66,6 @@ class Book:
         return int(mean([session.speed for session in self.sessions]))
 
     @property
-    def score(self):
-        """Summarized score over all sessions."""
-        return sum([session.score for session in self.sessions])
-
-    @property
-    def average_score(self):
-        """Average score over all sessions."""
-        return int(mean([session.score for session in self.sessions]))
-
-    @property
     def progress(self):
         """Current reading progress."""
         return int(self.current_position * 100)
@@ -96,12 +83,12 @@ class Book:
     @property
     def stats(self):
         """String containing this books stats."""
-        return ("{page_count} Pages. Progress: {progress}%. Score: {score}.\n"
+        return ("{page_count} Pages. Progress: {progress}%.\n"
                 "Read {duration} in {sessions} Sessions. "
                 "Average speed: {speed} pages/hour.").format(
                     page_count=self.page_count, progress=self.progress,
-                    score=self.score, duration=self.duration,
-                    sessions=len(self.sessions), speed=self.speed)
+                    duration=self.duration, sessions=len(self.sessions),
+                    speed=self.speed)
 
     def __str__(self):
         return "{}. {}.".format(self.title, self.author)

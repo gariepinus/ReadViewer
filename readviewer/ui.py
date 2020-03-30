@@ -55,7 +55,7 @@ class Screen(urwid.Frame):
         header_text = "/ReadViewer v{}".format(version)
         for level in self.path:
             header_text = "{}/{}".format(level, header_text)
-        return urwid.AttrMap(urwid.Text(header_text, align="right"), "reversed")
+        return urwid.AttrMap(urwid.Text(header_text, align="right"),"reversed")
 
     @property
     def footer(self):
@@ -90,22 +90,20 @@ class Main_Screen(Screen):
     @property
     def stat_box(self):
         if self.book:
-            stats = "{pages} pages ({progress}%) in {time} over {sessions} sessions since {timestamp}.\n[Average speed: {speed} pages/hour; Average score: {score}]".format(
+            stats = "{pages} pages ({progress}%) in {time} over {sessions} sessions since {timestamp}.\n[Average speed: {speed} pages/hour;]".format(
                 pages=self.book.current_page,
                 progress=self.book.progress,
-                time=self.book.duration, 
+                time=self.book.duration,
                 sessions=len(self.book.sessions), 
                 timestamp=self.book.sessions[0].timestamp.date(), 
-                speed=self.book.speed, 
-                score=self.book.average_score)
+                speed=self.book.speed)
         else:
-            stats = "{pages} pages in {time} over {sessions} sessions since {timestamp}.\n[Average speed: {speed} pages/hour; Average score: {score}]".format(
+            stats = "{pages} pages in {time} over {sessions} sessions since {timestamp}.\n[Average speed: {speed} pages/hour;]".format(
                 pages=data.cumulate("pages"), 
                 time=data.cumulate("duration"), 
                 sessions=len(data.sessions), 
                 timestamp=data.sessions[0].timestamp.date(), 
-                speed=data.average("speed"), 
-                score=data.average("score"))
+                speed=data.average("speed"))
 
         box = urwid.LineBox(urwid.Text(stats))
         return ("pack", box)
@@ -116,7 +114,7 @@ class Main_Screen(Screen):
             sessions = self.book.sessions[-100:]
         else:
             sessions = data.sessions[-100:]
-        graph = Bar_graph([session.score for session in sessions], x="Sessions [most recent {}]".format(len(sessions)), y="Score")
+        graph = Bar_graph([session.pages for session in sessions], x="Sessions [most recent {}]".format(len(sessions)), y="Pages")
         return (20, graph)
 
     @property

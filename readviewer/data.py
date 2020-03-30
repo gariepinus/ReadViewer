@@ -19,9 +19,8 @@ def load(file):
     for book in export_data['books']:
         books.append(Book(book))
 
-    # Collect the sessions from all books and calculate their scores
+    # Collect the sessions from all books in seperate list
     sessions = reduce(lambda a, b: a + b.sessions, books, [])
-    calculate_scores()
 
     # Sort the lists
     sort_books("current_position_timestamp", reverse=True)
@@ -38,22 +37,6 @@ def unfinished_books():
     """Return a list of unfinished books."""
     global books
     return filter(lambda book: book.state != "Finished", books)
-
-
-def calculate_scores():
-    """Calculate session scores and save add them to the instances."""
-    global sessions
-
-    max_duration = max([session.duration for session in sessions])
-    max_pages = max([session.pages for session in sessions])
-
-    one_percent_duration = max_duration / 100
-    one_percent_pages = max_pages / 100
-
-    for session in sessions:
-        duration_score = session.duration / one_percent_duration
-        pages_score = session.pages / one_percent_pages
-        session.set_score(int(mean([duration_score, pages_score])))
 
 
 def sessions_in_period(start_date=None, end_date=None):
