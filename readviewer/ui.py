@@ -90,13 +90,7 @@ class Main_Screen(Screen):
     @property
     def stat_box(self):
         if self.book:
-            stats = "{pages} pages ({progress}%) in {time} over {sessions} sessions since {timestamp}.\n[Average speed: {speed} pages/hour;]".format(
-                pages=self.book.current_page,
-                progress=self.book.progress,
-                time=self.book.duration,
-                sessions=len(self.book.sessions), 
-                timestamp=self.book.sessions[0].timestamp.date(), 
-                speed=self.book.speed)
+            stats = self.book.stats
         else:
             stats = "{pages} pages in {time} over {sessions} sessions since {timestamp}.\n[Average speed: {speed} pages/hour;]".format(
                 pages=data.cumulate("pages"), 
