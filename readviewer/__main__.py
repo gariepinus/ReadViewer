@@ -1,4 +1,3 @@
-import sys
 import argparse
 import readviewer.data as data
 # import readviewer.ui as ui
@@ -9,7 +8,10 @@ if __name__ == "__main__":
     # Eval cli arguments
     #
     parser = argparse.ArgumentParser(description="""Visualize
-                         ReadTracker data in your terminal.""")
+                         ReadTracker data in your terminal.""",
+                                     epilog="""ReadTracker by Christoffer
+                         Klang: https://github.com/christoffer/readtracker""",
+                                     prog="readviewer")
     parser.add_argument('file', metavar='FILE', type=str,
                         help="""the exported
                          JSON data you want to view""")
