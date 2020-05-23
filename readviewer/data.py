@@ -56,21 +56,6 @@ def sessions_in_period(start_date=None, end_date=None):
             session.timestamp.date() <= end_date.date()), sessions))
 
 
-def cumulate(attribute, start_date=None, end_date=None):
-    """Returns the sum of the given attribute for all sessions
-    from start to end date."""
-
-    if attribute == "duration":
-        return reduce(lambda a, b: a + b.duration,
-                      sessions_in_period(start_date=start_date,
-                                         end_date=end_date),
-                      timedelta())
-    else:
-        return sum([getattr(session, attribute)
-                    for session in sessions_in_period(start_date=start_date,
-                                                      end_date=end_date)])
-
-
 def sort_books(attribute, reverse=False):
     """Sort books list by the given attribute."""
     global books

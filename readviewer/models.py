@@ -54,7 +54,7 @@ class Session_list(list):
                   reverse=reverse)
 
     def average(self, attribute):
-        """Returns average of the given attribute for all sessions."""
+        """Return average for given attribute"""
 
         if attribute == "duration":
             return timedelta(
@@ -64,6 +64,16 @@ class Session_list(list):
             return int(mean([
                 getattr(session, attribute)
                 for session in self]))
+
+    def sum(self, attribute):
+        """Return sum for given attribute"""
+
+        if attribute == "duration":
+            return reduce(lambda a, b: a + b.duration,
+                          self, timedelta())
+        else:
+            return sum([getattr(session, attribute)
+                        for session in self])
 
 
 class Book:
