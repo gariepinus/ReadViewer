@@ -36,6 +36,15 @@ class Session:
                     self.progress, self.speed, self.duration)
 
 
+class Session_list(list):
+
+    def __init__(self, *args):
+        list.__init__(self, *args)
+
+    def append(self, *args):
+        list.append(self, *args)
+
+
 class Book:
 
     def __init__(self, json_data):

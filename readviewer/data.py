@@ -2,16 +2,12 @@ import json
 from functools import reduce
 from statistics import mean
 from datetime import timedelta
-from readviewer.models import Session, Book
-
-
-books = []
-sessions = []
+from readviewer.models import Session, Session_list, Book
 
 
 def load(file):
     """Load ReadTracker export data."""
-    global books, sessions, first_session
+    global books, sessions
 
     with open(file, "r") as data_file:
         export_data = json.load(data_file)
@@ -20,7 +16,7 @@ def load(file):
         books.append(Book(book))
 
     # Collect the sessions from all books in seperate list
-    sessions = reduce(lambda a, b: a + b.sessions, books, [])
+    sessions = Session_list(reduce(lambda a, b: a + b.sessions, books, []))
 
     # Save first session (we need the timestamp)
     first_session = sessions[0]
