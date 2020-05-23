@@ -4,6 +4,9 @@ from statistics import mean
 from datetime import timedelta
 from readviewer.models import Session, Session_list, Book
 
+books = []
+sessions = Session_list([])
+
 
 def load(file):
     """Load ReadTracker export data."""

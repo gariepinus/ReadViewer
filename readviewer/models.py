@@ -29,6 +29,9 @@ class Session:
         """Pages per hour (integer)"""
         return int(self.pages / (self.duration.seconds / 60 / 60))
 
+    def __repr__(self):
+        return """<Session {}>""".format(self.timestamp)
+
     def __str__(self):
         return ("{}: {:>4}  - {:>4} ({:>3} pages, "
                 "{:>3}%), {:>2} pages/hour, {}").format(
@@ -126,6 +129,9 @@ class Book:
                     speed=self.speed,
                     avg_duration=self.average_duration,
                     avg_sessions=len(self.sessions) / self.days)
+
+    def __repr__(self):
+        return """<Book "{}">""".format(self.title[:20])
 
     def __str__(self):
         return "{}. {}.".format(self.title, self.author)
