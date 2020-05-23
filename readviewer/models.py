@@ -92,8 +92,12 @@ class Session_list(list):
     @property
     def days(self):
         """Number of days between first and last session"""
-        return (self.last.timestamp.date()
-                - self.first.timestamp.date()).days
+        d = (self.last.timestamp.date()
+             - self.first.timestamp.date()).days
+        if d < 1:
+            return 1
+        else:
+            return d
 
     @property
     def duration(self):
