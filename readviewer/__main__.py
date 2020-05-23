@@ -1,6 +1,6 @@
 import sys
 import readviewer.data as data
-import readviewer.ui as ui
+#import readviewer.ui as ui
 
 if __name__ == "__main__":
 
@@ -26,4 +26,4 @@ if __name__ == "__main__":
     #
     # Start UI loop
     #
-    ui.run()
+    #ui.run()
