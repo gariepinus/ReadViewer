@@ -26,7 +26,7 @@ def load(file):
 
     # Sort the lists
     sort_books("current_position_timestamp", reverse=True)
-    sort_sessions("timestamp", reverse=True)
+    sessions.sort("timestamp", reverse=True)
 
 
 def finished_books():
@@ -95,10 +95,3 @@ def sort_books(attribute, reverse=False):
     """Sort books list by the given attribute."""
     global books
     books.sort(key=lambda book: getattr(book, attribute), reverse=reverse)
-
-
-def sort_sessions(attribute, reverse=False):
-    """Sort sessions list by the given attribute."""
-    global sessions
-    sessions.sort(
-        key=lambda session: getattr(session, attribute), reverse=reverse)

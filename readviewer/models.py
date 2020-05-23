@@ -47,6 +47,12 @@ class Session_list(list):
     def append(self, *args):
         list.append(self, *args)
 
+    def sort(self, attribute, reverse=False):
+        """Sort sessions list by the given attribute."""
+        list.sort(self,
+                  key=lambda session: getattr(session, attribute),
+                  reverse=reverse)
+
 
 class Book:
 
