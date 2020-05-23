@@ -75,6 +75,48 @@ class Session_list(list):
             return sum([getattr(session, attribute)
                         for session in self])
 
+    @property
+    def first(self):
+        """Chronologically first session"""
+        return sorted(self,
+                      key=lambda session: session.timestamp,
+                      reverse=False)[0]
+
+    @property
+    def last(self):
+        """Chronologically last session"""
+        return sorted(self,
+                      key=lambda session: session.timestamp,
+                      reverse=True)[0]
+
+    @property
+    def days(self):
+        """Number of days between first and last session"""
+        return (self.last.timestamp.date()
+                - self.first.timestamp.date()).days
+
+    @property
+    def duration(self):
+        """Summurazied duration of sessions in hours"""
+        return self.sum("duration").total_seconds() / 3600
+
+    def __str__(self):
+        return ("Read {duration:.1f} hours in {sessions} sessions "
+                "over {days} days between {first_timestamp} and "
+                "{last_timestamp}.\n"
+                "[Averages: {speed} pages/hour; "
+                "{avg_duration:.1f} hours/session; "
+                "{avg_sessions:.1f} sessions/day]").format(
+                    duration=self.duration,
+                    sessions=len(self),
+                    days=self.days,
+                    first_timestamp=self.first.timestamp.date(),
+                    last_timestamp=self.last.timestamp.date(),
+                    speed=self.average("speed"),
+                    avg_duration=self.average("duration").total_seconds()
+                    / 3600,
+                    avg_sessions=len(self) / self.days)
+
 
 class Book:
 
