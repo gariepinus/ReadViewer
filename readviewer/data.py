@@ -19,7 +19,7 @@ def load(file):
         books.append(Book(book))
 
     # Collect the sessions from all books in seperate list
-    sessions = Session_list(reduce(lambda a, b: a + b.sessions, books, []))
+    sessions = Session_list(reduce(lambda a, b: a + b, books, []))
 
     # Sort the lists
     sort_books("current_position_timestamp", reverse=True)

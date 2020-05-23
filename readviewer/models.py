@@ -101,12 +101,13 @@ class Session_list(list):
         return self.sum("duration").total_seconds() / 3600
 
     def __str__(self):
-        return ("Read {duration:.1f} hours in {sessions} sessions "
+        return ("{pages} pages, {duration:.1f} hours in {sessions} sessions "
                 "over {days} days between {first_timestamp} and "
                 "{last_timestamp}.\n"
                 "[Averages: {speed} pages/hour; "
                 "{avg_duration:.1f} hours/session; "
                 "{avg_sessions:.1f} sessions/day]").format(
+                    pages=self.sum("pages"),
                     duration=self.duration,
                     sessions=len(self),
                     days=self.days,
@@ -118,7 +119,7 @@ class Session_list(list):
                     avg_sessions=len(self) / self.days)
 
 
-class Book:
+class Book(Session_list):
 
     def __init__(self, json_data):
         self.title = json_data['title']
@@ -135,26 +136,11 @@ class Book:
         else:
             self.closing_remark = None
 
-        self.sessions = []
         for session in json_data['sessions']:
-            self.sessions.append(Session(session, self.page_count))
+            self.append(Session(session, self.page_count))
 
-    @property
-    def duration(self):
-        """Summarized duration of all sessions."""
-        return reduce(lambda a, b: a + b.duration, self.sessions, timedelta())
-
-    @property
-    def average_duration(self):
-        """Average duration per session (hours/session)."""
-        delta = timedelta(seconds=mean(
-            [session.duration.seconds for session in self.sessions]))
-        return delta.total_seconds() / 3600
-
-    @property
-    def speed(self):
-        """Average speed over all sessions."""
-        return int(mean([session.speed for session in self.sessions]))
+    def append(self, *args):
+        Session_list.append(self, *args)
 
     @property
     def progress(self):
@@ -167,41 +153,17 @@ class Book:
         return self.sessions[0].timestamp
 
     @property
-    def days(self):
-        """Number of days between start end current timestamp."""
-        return (self.current_position_timestamp.date()
-                - self.start_timestamp.date()).days
-
-    @property
     def current_page(self):
         """end_page of last session."""
-        return self.sessions[-1].end_page
-
-    @property
-    def stats(self):
-        """String containing this books stats."""
-        return ("{current_page} of {page_count} pages "
-                "({progress}%).\n"
-                "Read {duration:.1f} hours in {sessions} sessions "
-                "over {days} days between {start_timestamp} and "
-                "{current_position_timestamp}.\n"
-                "[Averages: {speed} pages/hour; "
-                "{avg_duration:.1f} hours/session; "
-                "{avg_sessions:.1f} sessions/day]").format(
-                    current_page=self.current_page,
-                    page_count=self.page_count,
-                    progress=self.progress,
-                    duration=self.duration.total_seconds() / 3600,
-                    sessions=len(self.sessions),
-                    days=self.days,
-                    start_timestamp=self.start_timestamp.date(),
-                    current_position_timestamp=self.current_position_timestamp.date(),
-                    speed=self.speed,
-                    avg_duration=self.average_duration,
-                    avg_sessions=len(self.sessions) / self.days)
+        return self.last.end_page
 
     def __repr__(self):
         return """<Book "{}">""".format(self.title[:20])
 
     def __str__(self):
-        return "{}. {}.".format(self.title, self.author)
+        return ("{title}. {author}. ({progress}%)\n"
+                "{session_stats}").format(
+            title=self.title,
+            author=self.author,
+            progress=self.progress,
+            session_stats=Session_list.__str__(self))
