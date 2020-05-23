@@ -21,7 +21,7 @@ class Session:
 
     @property
     def progress(self):
-        """Percantage of pages of book read"""
+        """Percantage of pages of book read (integer)"""
         return int((self.end_position - self.start_position) * 100)
 
     @property
@@ -48,10 +48,22 @@ class Session_list(list):
         list.append(self, *args)
 
     def sort(self, attribute, reverse=False):
-        """Sort sessions list by the given attribute."""
+        """Sort sessions by the given attribute."""
         list.sort(self,
                   key=lambda session: getattr(session, attribute),
                   reverse=reverse)
+
+    def average(self, attribute):
+        """Returns average of the given attribute for all sessions."""
+
+        if attribute == "duration":
+            return timedelta(
+                seconds=mean([session.duration.seconds
+                              for session in self]))
+        else:
+            return int(mean([
+                getattr(session, attribute)
+                for session in self]))
 
 
 class Book:
