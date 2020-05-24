@@ -41,12 +41,6 @@ class Session:
 
 class Session_list(list):
 
-    def __init__(self, *args):
-        list.__init__(self, *args)
-
-    def append(self, *args):
-        list.append(self, *args)
-
     def sort(self, attribute, reverse=False):
         """Sort sessions by the given attribute."""
         list.sort(self,
@@ -142,9 +136,6 @@ class Book(Session_list):
 
         for session in json_data['sessions']:
             self.append(Session(session, self.page_count))
-
-    def append(self, *args):
-        Session_list.append(self, *args)
 
     @property
     def progress(self):
