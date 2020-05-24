@@ -53,7 +53,7 @@ class Session_list(list):
         if attribute == "duration":
             return timedelta(
                 seconds=mean([session.duration.seconds
-                              for session in self]))
+                              for session in self])).total_seconds() / 3600
         else:
             return int(mean([
                 getattr(session, attribute)
@@ -84,6 +84,16 @@ class Session_list(list):
                       reverse=True)[0]
 
     @property
+    def start(self):
+        """Date of first session"""
+        return self.first.timestamp.date()
+
+    @property
+    def end(self):
+        """Date of last session"""
+        return self.last.timestamp.date()
+
+    @property
     def days(self):
         """Number of days between first and last session"""
         d = (self.last.timestamp.date()
@@ -109,11 +119,10 @@ class Session_list(list):
                     duration=self.duration,
                     sessions=len(self),
                     days=self.days,
-                    first_timestamp=self.first.timestamp.date(),
-                    last_timestamp=self.last.timestamp.date(),
+                    first_timestamp=self.start,
+                    last_timestamp=self.end,
                     speed=self.average("speed"),
-                    avg_duration=self.average("duration").total_seconds()
-                    / 3600,
+                    avg_duration=self.average("duration"),
                     avg_sessions=len(self) / self.days)
 
 
@@ -141,11 +150,6 @@ class Book(Session_list):
     def progress(self):
         """Current reading progress."""
         return int(self.current_position * 100)
-
-    @property
-    def start_timestamp(self):
-        """Timestamp of first reading session."""
-        return self.sessions[0].timestamp
 
     @property
     def current_page(self):
