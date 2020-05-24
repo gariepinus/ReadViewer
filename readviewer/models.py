@@ -42,7 +42,7 @@ class Session:
 class Session_list(list):
 
     def sort(self, attribute, reverse=False):
-        """Sort sessions by the given attribute."""
+        """Sort sessions by attribute"""
         list.sort(self,
                   key=lambda session: getattr(session, attribute),
                   reverse=reverse)
@@ -166,3 +166,21 @@ class Book(Session_list):
             author=self.author,
             progress=self.progress,
             session_stats=Session_list.__str__(self))
+
+
+class Book_list(list):
+
+    def sort(self, attribute, reverse=False):
+        """Sort books attribute"""
+        list.sort(self,
+                  key=lambda book: getattr(book, attribute), reverse=reverse)
+
+    @property
+    def finished(self):
+        """Finished books."""
+        return Book_list(filter(lambda book: book.state == "Finished", self))
+
+    @property
+    def unfinished(self):
+        """Unfinished books."""
+        return Book_list(filter(lambda book: book.state != "Finished", self))

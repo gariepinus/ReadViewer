@@ -1,7 +1,7 @@
 import json
-from readviewer.models import Session, Session_list, Book
+from readviewer.models import Session, Session_list, Book, Book_list
 
-books = []
+books = Book_list([])
 sessions = Session_list([])
 
 
@@ -17,23 +17,5 @@ def load(file):
         sessions += Book(book)
 
     # Sort the lists
-    sort_books("current_position_timestamp", reverse=True)
+    #sort_books("current_position_timestamp", reverse=True)
     sessions.sort("timestamp", reverse=True)
-
-
-def finished_books():
-    """Return a list of already finished books."""
-    global books
-    return filter(lambda book: book.state == "Finished", books)
-
-
-def unfinished_books():
-    """Return a list of unfinished books."""
-    global books
-    return filter(lambda book: book.state != "Finished", books)
-
-
-def sort_books(attribute, reverse=False):
-    """Sort book list by given attribute"""
-    global books
-    books.sort(key=lambda book: getattr(book, attribute), reverse=reverse)
