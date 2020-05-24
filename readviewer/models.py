@@ -54,6 +54,8 @@ class Session_list(list):
             return timedelta(
                 seconds=mean([session.duration.seconds
                               for session in self])).total_seconds() / 3600
+        elif attribute == "sessions_per_day":
+            return len(self) / self.days
         else:
             return int(mean([
                 getattr(session, attribute)
@@ -64,7 +66,7 @@ class Session_list(list):
 
         if attribute == "duration":
             return reduce(lambda a, b: a + b.duration,
-                          self, timedelta())
+                          self, timedelta()).total_seconds() / 3600
         else:
             return sum([getattr(session, attribute)
                         for session in self])
@@ -103,11 +105,6 @@ class Session_list(list):
         else:
             return d
 
-    @property
-    def duration(self):
-        """Summurazied duration of sessions in hours"""
-        return self.sum("duration").total_seconds() / 3600
-
     def __str__(self):
         if len(self) == 0:
             return "No sessions"
@@ -119,14 +116,14 @@ class Session_list(list):
                 "{avg_duration:.1f} hours/session; "
                 "{avg_sessions:.1f} sessions/day]").format(
                     pages=self.sum("pages"),
-                    duration=self.duration,
+                    duration=self.sum("duration"),
                     sessions=len(self),
                     days=self.days,
                     first_timestamp=self.start,
                     last_timestamp=self.end,
                     speed=self.average("speed"),
                     avg_duration=self.average("duration"),
-                    avg_sessions=len(self) / self.days)
+                    avg_sessions=self.average("sessions_per_day"))
 
 
 class Book(Session_list):
