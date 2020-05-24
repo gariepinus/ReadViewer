@@ -1,8 +1,9 @@
 import json
 from readviewer.models import Session, Session_list, Book, Book_list
 
-books = Book_list([])
-sessions = Session_list([])
+
+books = Book_list()
+sessions = Session_list()
 
 
 def load(file):
@@ -16,6 +17,5 @@ def load(file):
         books.append(Book(book))
         sessions += Book(book)
 
-    # Sort the lists
-    #sort_books("current_position_timestamp", reverse=True)
+    books.sort("current_position_timestamp", reverse=True)
     sessions.sort("timestamp", reverse=True)

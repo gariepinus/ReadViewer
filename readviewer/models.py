@@ -109,6 +109,9 @@ class Session_list(list):
         return self.sum("duration").total_seconds() / 3600
 
     def __str__(self):
+        if len(self) == 0:
+            return "No sessions"
+
         return ("{pages} pages, {duration:.1f} hours in {sessions} sessions "
                 "over {days} days between {first_timestamp} and "
                 "{last_timestamp}.\n"
@@ -184,3 +187,19 @@ class Book_list(list):
     def unfinished(self):
         """Unfinished books."""
         return Book_list(filter(lambda book: book.state != "Finished", self))
+
+    def __str__(self):
+        if len(self) == 0:
+            return "No books"
+        elif len(self.finished) > 0 and len(self.unfinished) > 0:
+            return ("{books} books "
+                    "({finished} read, "
+                    "{unfinished} unread)").format(
+                        books=len(self),
+                        finished=len(self.finished),
+                        unfinished=len(self.unfinished)
+                    )
+        elif len(self.finished) > 0:
+            return "{} read books".format(len(self))
+        else:
+            return "{} unread books".format(len(self))
