@@ -168,7 +168,24 @@ class Book(Session_list):
             session_stats=Session_list.__str__(self))
 
 
-class Book_list(list):
+class Meta_list(list):
+    """List of Session_lists"""
+
+    def sort_by_sum(self, attribute, reverse=False):
+        """Sort Session_lists by sum of attribute"""
+        list.sort(self,
+                  key=lambda session_list: session_list.sum(attribute),
+                  reverse=reverse)
+
+    def sort_by_average(self, attribute, reverse=False):
+        """Sort Session_lists by average of attribute"""
+        list.sort(self,
+                  key=lambda session_list: session_list.average(
+                      attribute),
+                  reverse=reverse)
+
+
+class Book_list(Meta_list):
 
     def sort(self, attribute, reverse=False):
         """Sort books attribute"""
