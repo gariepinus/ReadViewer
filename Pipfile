@@ -8,6 +8,7 @@ pycodestyle = "*"
 
 [packages]
 urwid = "*"
+sqlalchemy = "*"
 
 [requires]
 python_version = "3.8"

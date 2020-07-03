@@ -1,5 +1,5 @@
 import argparse
-import readviewer.data as data
+import readviewer.database as database
 # import readviewer.ui as ui
 
 if __name__ == "__main__":
@@ -20,7 +20,7 @@ if __name__ == "__main__":
     #
     # Load json data
     #
-    data.load(args.file)
+    database.load(args.file)
 
     #
     # Start UI loop
