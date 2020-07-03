@@ -180,9 +180,6 @@ class Book(Base, Session_list):
         else:
             self.closing_remark = None
 
-        for session in json_data['sessions']:
-            self.append(Reading_Session(session, self.page_count))
-
     @property
     def progress(self):
         """Current reading progress."""
