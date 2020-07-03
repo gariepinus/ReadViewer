@@ -25,6 +25,8 @@ def load(file):
     for book in export_data['books']:
         books.append(Book(book))
         sessions += Book(book)
+
+        session.add(Book(book))
         for reading_session in book['sessions']:
             session.add(Reading_Session(reading_session, book['page_count']))
 

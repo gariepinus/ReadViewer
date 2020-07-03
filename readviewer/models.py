@@ -8,8 +8,8 @@ Base = declarative_base()
 
 
 class Reading_Session(Base):
-    __tablename__ = 'sessions'
 
+    __tablename__ = 'sessions'
     id = Column(Integer, primary_key=True)
     duration = Column(Interval())
     start_position = Column(Float())
@@ -147,7 +147,16 @@ class Session_list(list):
                     avg_sessions=self.average("sessions_per_day"))
 
 
-class Book(Session_list):
+class Book(Base, Session_list):
+
+    __tablename__ = 'books'
+    id = Column(Integer, primary_key=True)
+    title = Column(String())
+    state = Column(String())
+    current_position_timestamp = Column(DateTime())
+    page_count = Column(Integer())
+    author = Column(String())
+    current_position = Column(Float())
 
     def __init__(self, json_data):
         self.title = json_data['title']
