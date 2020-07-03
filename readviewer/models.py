@@ -1,18 +1,39 @@
 from datetime import timedelta, datetime
 from functools import reduce
 from statistics import mean
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import Column, Integer, Interval, Float, String, DateTime
+
+Base = declarative_base()
 
 
-class Session:
+class Reading_Session(Base):
+    __tablename__ = 'sessions'
+
+    id = Column(Integer, primary_key=True)
+    duration = Column(Interval())
+    start_position = Column(Float())
+    end_position = Column(Float())
+    timestamp = Column(DateTime)
+    page_count = Column(Integer)
 
     def __init__(self, json_data, page_count):
         self.duration = timedelta(seconds=json_data['duration_seconds'])
         self.start_position = json_data['start_position']
-        self.start_page = int(json_data['start_position'] * page_count)
         self.end_position = json_data['end_position']
-        self.end_page = int(json_data['end_position'] * page_count)
         self.timestamp = datetime.fromtimestamp(
             int(str(json_data['timestamp'])[:-3]))
+        self.page_count = page_count
+
+    @property
+    def start_page(self):
+        """First page of session"""
+        return int(self.start_position * self.page_count)
+
+    @property
+    def end_page(self):
+        """Last page of session"""
+        return int(self.end_position * self.page_count)
 
     @property
     def pages(self):
@@ -144,7 +165,7 @@ class Book(Session_list):
             self.closing_remark = None
 
         for session in json_data['sessions']:
-            self.append(Session(session, self.page_count))
+            self.append(Reading_Session(session, self.page_count))
 
     @property
     def progress(self):
