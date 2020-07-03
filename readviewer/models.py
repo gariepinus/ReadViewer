@@ -2,7 +2,10 @@ from datetime import timedelta, datetime
 from functools import reduce
 from statistics import mean
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, Interval, Float, String, DateTime
+from sqlalchemy.orm import relationship
+from sqlalchemy import (Column, Integer, Interval, Float, String, DateTime,
+                        ForeignKey)
+
 
 Base = declarative_base()
 
@@ -16,24 +19,26 @@ class Reading_Session(Base):
     end_position = Column(Float())
     timestamp = Column(DateTime)
     page_count = Column(Integer)
+    book_id = Column(Integer, ForeignKey('books.id'))
+    book = relationship("Book", back_populates="sessions")
 
-    def __init__(self, json_data, page_count):
+    def __init__(self, json_data, book):
         self.duration = timedelta(seconds=json_data['duration_seconds'])
         self.start_position = json_data['start_position']
         self.end_position = json_data['end_position']
         self.timestamp = datetime.fromtimestamp(
             int(str(json_data['timestamp'])[:-3]))
-        self.page_count = page_count
+        self.book_id = book
 
     @property
     def start_page(self):
         """First page of session"""
-        return int(self.start_position * self.page_count)
+        return int(self.start_position * self.book.page_count)
 
     @property
     def end_page(self):
         """Last page of session"""
-        return int(self.end_position * self.page_count)
+        return int(self.end_position * self.book.page_count)
 
     @property
     def pages(self):
@@ -51,7 +56,8 @@ class Reading_Session(Base):
         return int(self.pages / (self.duration.seconds / 60 / 60))
 
     def __repr__(self):
-        return """<Session {}>""".format(self.timestamp)
+        return """<Session#{:0>8} [Book#{:0>4}] {}>""".format(
+                    self.id, self.book_id, self.timestamp)
 
     def __str__(self):
         return ("{}: {:>4}  - {:>4} ({:>3} pages, "
@@ -157,6 +163,7 @@ class Book(Base, Session_list):
     page_count = Column(Integer())
     author = Column(String())
     current_position = Column(Float())
+    sessions = relationship("Reading_Session")
 
     def __init__(self, json_data):
         self.title = json_data['title']
@@ -187,7 +194,7 @@ class Book(Base, Session_list):
         return self.last.end_page
 
     def __repr__(self):
-        return """<Book "{}">""".format(self.title[:20])
+        return """<Book#{:0>4} "{}">""".format(self.id, self.title[:20])
 
     def __str__(self):
         return ("{title}. {author}. ({progress}%)\n"

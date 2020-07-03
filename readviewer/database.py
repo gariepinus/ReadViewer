@@ -18,8 +18,10 @@ def load(file):
         export_data = json.load(data_file)
 
     for book in export_data['books']:
-        session.add(Book(book))
-        for reading_session in book['sessions']:
-            session.add(Reading_Session(reading_session, book['page_count']))
+        new_book = Book(book)
+        session.add(new_book)
+        session.commit()
 
-    session.commit()
+        for reading_session in book['sessions']:
+            session.add(Reading_Session(reading_session, new_book.id))
+        session.commit()
