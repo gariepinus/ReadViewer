@@ -68,7 +68,8 @@ class Reading_Session(Base):
 
 class Session_list():
 
-    sessions = list()
+    def __init__(self, sessions=[]):
+        self.sessions = list(sessions)
 
     def sort(self, attribute, reverse=False):
         """Sort sessions by attribute"""
@@ -133,6 +134,9 @@ class Session_list():
             return 1
         else:
             return d
+
+    def __repr__(self):
+        return self.sessions.__repr__()
 
     def __str__(self):
         if len(self.sessions) == 0:
