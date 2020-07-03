@@ -18,7 +18,6 @@ class Reading_Session(Base):
     start_position = Column(Float())
     end_position = Column(Float())
     timestamp = Column(DateTime)
-    page_count = Column(Integer)
     book_id = Column(Integer, ForeignKey('books.id'))
     book = relationship("Book", back_populates="sessions")
 
@@ -56,7 +55,7 @@ class Reading_Session(Base):
         return int(self.pages / (self.duration.seconds / 60 / 60))
 
     def __repr__(self):
-        return """<Session#{:0>8} [Book#{:0>4}] {}>""".format(
+        return """<Session#{} [Book#{}] {}>""".format(
                     self.id, self.book_id, self.timestamp)
 
     def __str__(self):
@@ -197,7 +196,7 @@ class Book(Base, Session_list):
         return self.last.end_page
 
     def __repr__(self):
-        return """<Book#{:0>4} "{}">""".format(self.id, self.title[:20])
+        return """<Book#{} "{}">""".format(self.id, self.title[:20])
 
     def __str__(self):
         return ("{title}. {author}. ({progress}%)\n"
