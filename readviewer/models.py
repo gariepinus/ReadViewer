@@ -66,11 +66,13 @@ class Reading_Session(Base):
                     self.progress, self.speed, self.duration)
 
 
-class Session_list(list):
+class Session_list():
+
+    sessions = list()
 
     def sort(self, attribute, reverse=False):
         """Sort sessions by attribute"""
-        list.sort(self,
+        self.sessions.sort(
                   key=lambda session: getattr(session, attribute),
                   reverse=reverse)
 
@@ -80,35 +82,35 @@ class Session_list(list):
         if attribute == "duration":
             return timedelta(
                 seconds=mean([session.duration.seconds
-                              for session in self])).total_seconds() / 3600
+                              for session in self.sessions])).total_seconds() / 3600
         elif attribute == "sessions_per_day":
-            return len(self) / self.days
+            return len(self.sessions) / self.days
         else:
             return int(mean([
                 getattr(session, attribute)
-                for session in self]))
+                for session in self.sessions]))
 
     def sum(self, attribute):
         """Return sum for given attribute"""
 
         if attribute == "duration":
             return reduce(lambda a, b: a + b.duration,
-                          self, timedelta()).total_seconds() / 3600
+                          self.sessions, timedelta()).total_seconds() / 3600
         else:
             return sum([getattr(session, attribute)
-                        for session in self])
+                        for session in self.sessions])
 
     @property
     def first(self):
         """Chronologically first session"""
-        return sorted(self,
+        return sorted(self.sessions,
                       key=lambda session: session.timestamp,
                       reverse=False)[0]
 
     @property
     def last(self):
         """Chronologically last session"""
-        return sorted(self,
+        return sorted(self.sessions,
                       key=lambda session: session.timestamp,
                       reverse=True)[0]
 
@@ -133,7 +135,7 @@ class Session_list(list):
             return d
 
     def __str__(self):
-        if len(self) == 0:
+        if len(self.sessions) == 0:
             return "No sessions"
 
         return ("{pages} pages, {duration:.1f} hours in {sessions} sessions "
@@ -144,7 +146,7 @@ class Session_list(list):
                 "{avg_sessions:.1f} sessions/day]").format(
                     pages=self.sum("pages"),
                     duration=self.sum("duration"),
-                    sessions=len(self),
+                    sessions=len(self.sessions),
                     days=self.days,
                     first_timestamp=self.start,
                     last_timestamp=self.end,
