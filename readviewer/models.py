@@ -205,37 +205,3 @@ class Book(Base, Session_list):
             author=self.author,
             progress=self.progress,
             session_stats=Session_list.__str__(self))
-
-
-class Book_list():
-
-    def sort(self, attribute, reverse=False):
-        """Sort books attribute"""
-        list.sort(self,
-                  key=lambda book: getattr(book, attribute), reverse=reverse)
-
-    @property
-    def finished(self):
-        """Finished books."""
-        return Book_list(filter(lambda book: book.state == "Finished", self))
-
-    @property
-    def unfinished(self):
-        """Unfinished books."""
-        return Book_list(filter(lambda book: book.state != "Finished", self))
-
-    def __str__(self):
-        if len(self) == 0:
-            return "No books"
-        elif len(self.finished) > 0 and len(self.unfinished) > 0:
-            return ("{books} books "
-                    "({finished} read, "
-                    "{unfinished} unread)").format(
-                        books=len(self),
-                        finished=len(self.finished),
-                        unfinished=len(self.unfinished)
-                    )
-        elif len(self.finished) > 0:
-            return "{} read books".format(len(self))
-        else:
-            return "{} unread books".format(len(self))
