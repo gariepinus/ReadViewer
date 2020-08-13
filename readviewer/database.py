@@ -14,8 +14,8 @@ def load(file):
     global engine, session
     Base.metadata.create_all(engine)
 
-    with open(file, "r") as data_file:
-        export_data = json.load(data_file)
+    with open(file, "r") as export_file:
+        export_data = json.load(export_file)
 
     for book in export_data['books']:
         new_book = Book(book)

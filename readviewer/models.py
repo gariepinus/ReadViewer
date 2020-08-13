@@ -1,6 +1,4 @@
 from datetime import timedelta, datetime
-from functools import reduce
-from statistics import mean
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy import (Column, Integer, Interval, Float, String, DateTime,
@@ -96,11 +94,6 @@ class Book(Base):
     def progress(self):
         """Current reading progress."""
         return int(self.current_position * 100)
-
-    @property
-    def current_page(self):
-        """end_page of last session."""
-        return self.last.end_page
 
     def __repr__(self):
         return """<Book#{} "{}">""".format(self.id, self.title[:20])
