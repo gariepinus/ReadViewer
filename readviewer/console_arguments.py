@@ -10,6 +10,8 @@ def _parse_arguments():
     parser.add_argument('file', metavar='FILE', type=str,
                         help="""the exported
                          JSON file you want to view""")
+    parser.add_argument('-v', '--verbose', action='store_const',
+                        const=True, default=False)
     return parser.parse_args()
 
 

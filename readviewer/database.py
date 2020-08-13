@@ -1,10 +1,11 @@
 import json
+from readviewer.console_arguments import CONSOLE_ARGUMENTS as args
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from readviewer.models import Base, Reading_Session, Book
 
 
-engine = create_engine('sqlite:///:memory:', echo=True)
+engine = create_engine('sqlite:///:memory:', echo=args.verbose)
 Session = sessionmaker(bind=engine)
 session = Session()
 
