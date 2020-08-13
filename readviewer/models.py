@@ -65,100 +65,7 @@ class Reading_Session(Base):
                     self.progress, self.speed, self.duration)
 
 
-class Session_list():
-
-    def __init__(self, sessions=[]):
-        self.sessions = list(sessions)
-
-    def sort(self, attribute, reverse=False):
-        """Sort sessions by attribute"""
-        self.sessions.sort(
-                  key=lambda session: getattr(session, attribute),
-                  reverse=reverse)
-
-    def average(self, attribute):
-        """Return average for given attribute"""
-
-        if attribute == "duration":
-            return timedelta(
-                seconds=mean([session.duration.seconds
-                              for session in self.sessions])).total_seconds() / 3600
-        elif attribute == "sessions_per_day":
-            return len(self.sessions) / self.days
-        else:
-            return int(mean([
-                getattr(session, attribute)
-                for session in self.sessions]))
-
-    def sum(self, attribute):
-        """Return sum for given attribute"""
-
-        if attribute == "duration":
-            return reduce(lambda a, b: a + b.duration,
-                          self.sessions, timedelta()).total_seconds() / 3600
-        else:
-            return sum([getattr(session, attribute)
-                        for session in self.sessions])
-
-    @property
-    def first(self):
-        """Chronologically first session"""
-        return sorted(self.sessions,
-                      key=lambda session: session.timestamp,
-                      reverse=False)[0]
-
-    @property
-    def last(self):
-        """Chronologically last session"""
-        return sorted(self.sessions,
-                      key=lambda session: session.timestamp,
-                      reverse=True)[0]
-
-    @property
-    def start(self):
-        """Date of first session"""
-        return self.first.timestamp.date()
-
-    @property
-    def end(self):
-        """Date of last session"""
-        return self.last.timestamp.date()
-
-    @property
-    def days(self):
-        """Number of days between first and last session"""
-        d = (self.last.timestamp.date()
-             - self.first.timestamp.date()).days
-        if d < 1:
-            return 1
-        else:
-            return d
-
-    def __repr__(self):
-        return self.sessions.__repr__()
-
-    def __str__(self):
-        if len(self.sessions) == 0:
-            return "No sessions"
-
-        return ("{pages} pages, {duration:.1f} hours in {sessions} sessions "
-                "over {days} days between {first_timestamp} and "
-                "{last_timestamp}.\n"
-                "[Averages: {speed} pages/hour; "
-                "{avg_duration:.1f} hours/session; "
-                "{avg_sessions:.1f} sessions/day]").format(
-                    pages=self.sum("pages"),
-                    duration=self.sum("duration"),
-                    sessions=len(self.sessions),
-                    days=self.days,
-                    first_timestamp=self.start,
-                    last_timestamp=self.end,
-                    speed=self.average("speed"),
-                    avg_duration=self.average("duration"),
-                    avg_sessions=self.average("sessions_per_day"))
-
-
-class Book(Base, Session_list):
+class Book(Base):
 
     __tablename__ = 'books'
     id = Column(Integer, primary_key=True)
@@ -199,9 +106,7 @@ class Book(Base, Session_list):
         return """<Book#{} "{}">""".format(self.id, self.title[:20])
 
     def __str__(self):
-        return ("{title}. {author}. ({progress}%)\n"
-                "{session_stats}").format(
+        return "{title}. {author}. ({progress}%)".format(
             title=self.title,
             author=self.author,
-            progress=self.progress,
-            session_stats=Session_list.__str__(self))
+            progress=self.progress)
