@@ -1,6 +1,5 @@
 import argparse
 import readviewer.database as database
-# import readviewer.ui as ui
 
 if __name__ == "__main__":
 
@@ -22,7 +21,3 @@ if __name__ == "__main__":
     #
     database.load(args.file)
 
-    #
-    # Start UI loop
-    #
-    # ui.run()

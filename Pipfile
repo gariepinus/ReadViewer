@@ -7,7 +7,6 @@ verify_ssl = true
 pycodestyle = "*"
 
 [packages]
-urwid = "*"
 sqlalchemy = "*"
 
 [requires]
